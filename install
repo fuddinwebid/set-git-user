@@ -1,0 +1,12 @@
+#!/bin/sh
+
+test -w /usr/local/bin || {
+  echo "/usr/local/bin must be writeable and in your path"
+  exit 1
+}
+
+cp set-git-user /usr/local/bin/
+ln -sf /usr/local/bin/set-git-user /usr/local/bin/iam
+ln -sf /usr/local/bin/set-git-user /usr/local/bin/weare
+
+echo "Installed to /usr/local/bin"

@@ -1,0 +1,18 @@
+Set's git username for individuals and pairs from their github profiles
+
+  $ iam quackingduck
+  $ git config --global user.name
+  Myles Byrne
+  $ git config --global user.email
+  myles@myles.id.au
+
+  $ weare quackingduck mweitzel
+  Matthew Weitzel & Myles Byrne
+  $ git config --global user.email
+  pair+mweitzel.quackingduck@devbootcamp.com
+
+For pairs:
+
+ - The person with alphanumerically lower github username is always sorted first
+ - The special email address pair+{user1}.{user2}@devbootcamp.com is used, this
+   routes mail to pair@devbootcamp.com which will bounce any mail sent to it.

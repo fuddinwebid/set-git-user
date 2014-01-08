@@ -1,0 +1,64 @@
+#!/bin/bash
+
+set -e
+
+# Check dependencies
+(which -s json && test 'https://github.com/trentm/json' = "`json --version | tail -1`") || {
+  echo "jsontool required: npm install -g jsontool"
+  exit 1
+}
+
+# Enforce the credential cacher - this means that credentials used after a fetch/push will be
+# cached for 15min
+git config --global credential.helper cache
+# Flush any existing cached credentials
+git credential-cache exit
+
+# No args given
+test $1 || {
+echo "\
+Set git username(s):
+  iam   github-username
+  weare github-username github-username
+Sign out:
+  iam   out
+  weare out"
+  exit
+}
+
+test 'out' = $1 && {
+  git config --global --unset user.name
+  git config --global --unset user.email
+  exit
+}
+
+function user_json {
+  local username=$1
+  local json=`curl -s https://api.github.com/users/$username`
+  test "Not Found" = "`echo $json | json message`" && {
+    echo "Couldn't find $username on GitHub" >&2
+    exit 1
+  }
+  echo $json
+}
+
+# One arg given
+! test $2 && {
+  user_json=`user_json $1`
+  git config --global user.name  "`echo $user_json | json name`"
+  git config --global user.email "`echo $user_json | json email`"
+  exit
+}
+
+# Two args
+{
+  sorted_usernames=(`echo -e "$1\n$2" | sort`)
+  username1=${sorted_usernames[0]}
+  username2=${sorted_usernames[1]}
+  user1_json=`user_json $username1`
+  user2_json=`user_json $username2`
+  names="`echo $user1_json | json name` & `echo $user2_json | json name`"
+  email="pair+$username1.$username2@devbootcamp.com"
+  git config --global user.name  "$names"
+  git config --global user.email "$email"
+}
