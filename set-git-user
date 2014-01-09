@@ -9,8 +9,8 @@ set -e
 }
 
 # Enforce the credential cacher - this means that credentials used after a fetch/push will be
-# cached for 15min
-git config --global credential.helper cache
+# cached for 4hrs
+git config --global credential.helper 'cache --timeout=14400'
 # Flush any existing cached credentials
 git credential-cache exit
 
