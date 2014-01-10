@@ -27,8 +27,7 @@ Sign out:
 }
 
 test 'out' = $1 && {
-  git config --global --unset user.name
-  git config --global --unset user.email
+  git config --global --remove-section user
   exit
 }
 
