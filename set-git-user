@@ -49,9 +49,13 @@ function user_json {
   exit
 }
 
-# Two args
+# More than one arg given
 {
-  sorted_usernames=(`echo -e "$1\n$2" | sort`)
+  user1=$1
+  user2=$2
+  test $3 && test 'and' = $user2 && user2=$3
+
+  sorted_usernames=(`echo -e "$user1\n$user2" | sort`)
   username1=${sorted_usernames[0]}
   username2=${sorted_usernames[1]}
   user1_json=`user_json $username1`
