@@ -78,9 +78,14 @@ function user_json {
 
 # One arg given - set the git author to one person
 ! test $2 && {
+  # Fetch user attribs from github
   user_json=`user_json $1`
-  git config --global user.name  "`echo $user_json | json name`"
-  git config --global user.email "`echo $user_json | json email`"
+  # Parse name and email
+  name=`echo $user_json | json name`
+  email=`echo $user_json | json email`
+  # Set git author
+  git config --global user.name  "$name"
+  git config --global user.email "$email"
   git_config_add_dbc_students $1
   exit
 }
@@ -91,16 +96,20 @@ function user_json {
   user2=$2
   # if the second arg is "and" then user2 is the third arg
   test $3 && test 'and' = $user2 && user2=$3
-
   # ensure consistent ordering of author names regardless of the order given in the args
   sorted_usernames=(`echo -e "$user1\n$user2" | sort`)
   username1=${sorted_usernames[0]}
   username2=${sorted_usernames[1]}
-
+  # Fetch user attribs from github
   user1_json=`user_json $username1`
   user2_json=`user_json $username2`
-  names="`echo $user1_json | json name` & `echo $user2_json | json name`"
+  # Parse names
+  name1=`echo $user1_json | json name`
+  name2=`echo $user2_json | json name`
+  names="$name1 & $name2"
+  # Create pair email
   email="pair+$username1.$username2@devbootcamp.com"
+  # Set git author
   git config --global user.name  "$names"
   git config --global user.email "$email"
 
