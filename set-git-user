@@ -38,8 +38,22 @@ Current email: $current_user_email"
   exit
 }
 
+function git_config_clear_dbc_students {
+  git config --global --remove-section dbc 2>/dev/null || true
+}
+
+function git_config_add_dbc_students {
+  git_config_clear_dbc_students
+  while [ $# -gt 0 ]
+  do
+    git config --global --add dbc.student "$1"
+    shift
+  done
+}
+
 test 'out' = $1 && {
   git config --global --remove-section user
+  git_config_clear_dbc_students
   exit
 }
 
@@ -58,6 +72,7 @@ function user_json {
   user_json=`user_json $1`
   git config --global user.name  "`echo $user_json | json name`"
   git config --global user.email "`echo $user_json | json email`"
+  git_config_add_dbc_students $1
   exit
 }
 
@@ -76,4 +91,6 @@ function user_json {
   email="pair+$username1.$username2@devbootcamp.com"
   git config --global user.name  "$names"
   git config --global user.email "$email"
+
+  git_config_add_dbc_students $user1 $user2
 }
