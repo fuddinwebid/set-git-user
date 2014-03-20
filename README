@@ -1,18 +1,41 @@
-Set's git username for individuals and pairs from their github profiles
+A utility to manage the current github user or pair of users on a shared
+workstation setup such as those commonly found at software consulting firms and
+developer bootcamps.
+
+Installation
+
+  $ git clone https://github.com/Devbootcamp/set-git-user.git
+  $ cd set-git-user
+  $ ./install # will install to /usr/local/bin
+
+The `set-git-user` executable is also aliased (via symlinks) to `iam` and
+`weare` for a nicer user interface.
+
+The simplest use of this utility is to set the current git author (globally)
+based on a github username:
 
   $ iam quackingduck
   $ git config --global user.name
   Myles Byrne
   $ git config --global user.email
   myles@myles.id.au
+  $ get-git-user
+  quackingduck
 
-  $ weare quackingduck mweitzel
+But you can also use it to set the current git author to a pair of users. The
+author email will be pair+{username}.{username}@{domain} where the usernames
+are ordered alphanumerically (and therefore deterministically) and the domain is
+set by the ORG_DOMAIN environment variable (which you probably want to set
+in workstation's shell config).
+
+  $ ORG_DOMAIN=devbootcamp.com weare quackingduck mweitzel
   Matthew Weitzel & Myles Byrne
   $ git config --global user.email
   pair+mweitzel.quackingduck@devbootcamp.com
+  $ get-git-user
+  mweitzel
+  quackingduck
 
-For pairs:
-
- - The person with alphanumerically lower github username is always sorted first
- - The special email address pair+{user1}.{user2}@devbootcamp.com is used, this
-   routes mail to pair@devbootcamp.com which will bounce any mail sent to it.
+If your organization uses Google apps for email then set up the address
+pair@your.org to bounce incoming emails - Google automatically routes
+{user}+{anything}@your.org to {user}@your.org
