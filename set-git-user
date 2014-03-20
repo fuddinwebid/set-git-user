@@ -108,7 +108,7 @@ function user_json {
   name2=`echo $user2_json | json name`
   names="$name1 & $name2"
   # Create pair email
-  email="pair+$username1.$username2@devbootcamp.com"
+  email="pair+$username1.$username2@${ORG_DOMAIN:-devbootcamp.com}"
   # Set git author
   git config --global user.name  "$names"
   git config --global user.email "$email"
