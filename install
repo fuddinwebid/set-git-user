@@ -6,6 +6,7 @@ test -w /usr/local/bin || {
 }
 
 cp set-git-user /usr/local/bin/
+cp get-git-user /usr/local/bin/
 ln -sf /usr/local/bin/set-git-user /usr/local/bin/iam
 ln -sf /usr/local/bin/set-git-user /usr/local/bin/weare
 

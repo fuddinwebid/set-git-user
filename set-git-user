@@ -45,15 +45,15 @@ Current email: $current_user_email"
   exit
 }
 
-function git_config_clear_dbc_students {
-  git config --global --remove-section dbc 2>/dev/null || true
+function git_config_clear_github_username {
+  git config --global --remove-section github 2>/dev/null || true
 }
 
-function git_config_add_dbc_students {
-  git_config_clear_dbc_students
+function git_config_add_github_username {
+  git_config_clear_github_username
   while [ $# -gt 0 ]
   do
-    git config --global --add dbc.student "$1"
+    git config --global --add github.username "$1"
     shift
   done
 }
@@ -61,7 +61,7 @@ function git_config_add_dbc_students {
 # First arg is "out" - clear existing author config
 test 'out' = $1 && {
   git config --global --remove-section user
-  git_config_clear_dbc_students
+  git_config_clear_github_username
   exit
 }
 
@@ -86,7 +86,7 @@ function user_json {
   # Set git author
   git config --global user.name  "$name"
   git config --global user.email "$email"
-  git_config_add_dbc_students $1
+  git_config_add_github_username $1
   exit
 }
 
@@ -113,5 +113,5 @@ function user_json {
   git config --global user.name  "$names"
   git config --global user.email "$email"
 
-  git_config_add_dbc_students $user1 $user2
+  git_config_add_github_username $user1 $user2
 }
