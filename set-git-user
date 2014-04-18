@@ -8,12 +8,6 @@
 # Exit immediately if any line that isn't an expression or a pipeline fails
 set -e
 
-# Check dependency: jsontool - the command line json parser distributed with node's npm
-(which -s json && test 'https://github.com/trentm/json' = "`json --version | tail -1`") || {
-  echo "jsontool required: npm install -g jsontool"
-  exit 1
-}
-
 # Enforce the use of git's credential cache - this means that github credentials used for a
 # fetch/push will be cached for 4hrs
 git config --global credential.helper 'cache --timeout=14400'
@@ -45,6 +39,10 @@ Current email: $current_user_email"
   exit
 }
 
+function get_field_from_json {
+  echo "$1" | grep "\"$2\"" | sed "s/  \"$2\": \"\(.*\)\",$/\1/"
+}
+
 function git_config_clear_github_username {
   git config --global --remove-section github 2>/dev/null || true
 }
@@ -69,11 +67,11 @@ test 'out' = $1 && {
 function user_json {
   local username=$1
   local json=`curl -s https://api.github.com/users/$username`
-  test "Not Found" = "`echo $json | json message`" && {
+  test "Not Found" = "$(get_field_from_json "$json" message)" && {
     echo "Couldn't find $username on GitHub" >&2
     exit 1
   }
-  echo $json
+  echo "$json"
 }
 
 # One arg given - set the git author to one person
@@ -81,8 +79,8 @@ function user_json {
   # Fetch user attribs from github
   user_json=`user_json $1`
   # Parse name and email
-  name=`echo $user_json | json name`
-  email=`echo $user_json | json email`
+  name=`get_field_from_json "$user_json" name`
+  email=`get_field_from_json "$user_json" email`
   # Set git author
   git config --global user.name  "$name"
   git config --global user.email "$email"
@@ -104,8 +102,8 @@ function user_json {
   user1_json=`user_json $username1`
   user2_json=`user_json $username2`
   # Parse names
-  name1=`echo $user1_json | json name`
-  name2=`echo $user2_json | json name`
+  name1=`get_field_from_json "$user1_json" name`
+  name2=`get_field_from_json "$user2_json" name`
   names="$name1 & $name2"
   # Create pair email
   email="pair+$username1.$username2@${ORG_DOMAIN:-devbootcamp.com}"
