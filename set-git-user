@@ -69,7 +69,7 @@ test 'out' = $1 && {
 function user_json {
   local username=$1
   local json=`curl -s https://api.github.com/users/$username`
-  test "Not Found" = "$(get_field_from_json "$json" message)" && {
+  test "Not Found" = "`echo $json | json message`" && {
     echo "Couldn't find $username on GitHub" >&2
     exit 1
   }
