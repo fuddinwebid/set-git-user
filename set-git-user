@@ -66,7 +66,11 @@ test 'out' = $1 && {
 # Given a github username, fetch json-encoded attributes from the public api
 function user_json {
   local username=$1
-  local json=`curl -s https://api.github.com/users/$username`
+  if [ $SGU_API_KEY ]; then
+    local json=`curl -H "Authorization: token $SGU_API_KEY" -s https://api.github.com/users/$username`
+  else
+    local json=`curl -s https://api.github.com/users/$username`
+  fi
   test "Not Found" = "$(get_field_from_json "$json" message)" && {
     echo "Couldn't find $username on GitHub" >&2
     exit 1
