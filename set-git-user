@@ -19,8 +19,8 @@ git credential-cache exit
 test $1 || {
   echo "\
 Set git username(s):
-  iam   github-username
-  weare github-username github-username
+  iam   <github-username>
+  weare <github-username> [and] <github-username>
 Sign out:
   iam   out
   weare out"

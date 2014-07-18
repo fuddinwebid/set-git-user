@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# This isn't a test-suite, it's more of a test harness
+#
+# All set-git-user does is mutate the values of some properties in your global git config (~/.gitconfig)
+# Secifically:
+#   credential.helper
+#   user.name
+#   user.email
+#   github.username
+#
+# This script makes proxies its args to set-git-user but makes it think the home dir is /tmp
+# Then it prints the contents of /tmp/.gitconfig
+#
+# The upshot is that your default git config is left alone and nothing needs to be "injected" into the
+# program itself.
+
+set -e
+export HOME=/tmp
+./set-git-user "$@"
+cat /tmp/.gitconfig
