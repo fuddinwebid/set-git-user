@@ -25,7 +25,7 @@ Set git username(s):
 Examples:
 
   $ iam quackingduck
-  $ weare quackingduck and mweitzel  alycit
+  $ weare quackingduck and mweitzel
   $ weare quackingduck mweitzel alycit
 
 Sign out:
