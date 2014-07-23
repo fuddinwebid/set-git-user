@@ -95,6 +95,20 @@ function join_with_spaces {
 
 function join { local IFS="$1"; shift; echo "$*"; }
 
+function clean_ands_from_input {
+  args=("${@}")
+  clean_args=()
+
+  for arg in "${args[@]}"; do
+    if [ $arg != "and" ]
+    then
+      clean_args+=($arg)
+    fi
+  done
+
+  echo ${clean_args[@]}
+}
+
 # One arg given - set the git author to one person
 ! test $2 && {
   # Fetch user attribs from github
@@ -111,31 +125,29 @@ function join { local IFS="$1"; shift; echo "$*"; }
 
 # More than one arg given - set the git author to a pair
 {
-  input=("$@")
-  users=()
-  names=()
-  full_name=""
+  # clean "and" from input args
+  argv=("$@")
+  users=`clean_ands_from_input "${argv[@]}"`
 
-  # clean "and" from input
-  for user in "${input[@]}"; do
-    if [ $user != "and" ]
-    then
-      users+=($user)
-    fi
-  done
   # ensure consistent ordering of author names regardless of the order given in the args
   sorted_usernames=($(printf '%s\n' "${users[@]}"|sort))
+
+  sorted_names=()
+
   # Fetch user attribs from github and parse them
   for sorted in "${sorted_usernames[@]}"; do
     json=`user_json $sorted`
     name=`get_field_from_json "$json" name`
-    names+=("$name")
+    sorted_names+=("$name")
   done
+
   #Create display name
-  all_names=`join_with_spaces "&" "${names[@]}"`
+  all_names=`join_with_spaces "&" "${sorted_names[@]}"`
   all_usernames=`join "." "${sorted_usernames[@]}"`
+
   # Create email
   email="pair+$all_usernames@${ORG_DOMAIN:-devbootcamp.com}"
+
   # Set git author
   git config --global user.name  "$all_names"
   git config --global user.email "$email"
