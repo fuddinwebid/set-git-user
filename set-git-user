@@ -20,7 +20,14 @@ test $1 || {
   echo "\
 Set git username(s):
   iam   <github-username>
-  weare <github-username> [and] <github-username>
+  weare <github-username> [and] <github-username>...
+
+Examples:
+
+  $ iam quackingduck
+  $ weare quackingduck and mweitzel
+  $ weare quackingduck mweitzel alycit
+
 Sign out:
   iam   out
   weare out"
@@ -78,6 +85,30 @@ function user_json {
   echo "$json"
 }
 
+function join_with_spaces {
+  delimeter="${1}"
+  shift
+  words=("${@}")
+  joined=$(printf " $delimeter %s" "${words[@]}")
+  echo ${joined:2}
+}
+
+function join { local IFS="$1"; shift; echo "$*"; }
+
+function clean_ands_from_input {
+  args=("${@}")
+  clean_args=()
+
+  for arg in "${args[@]}"; do
+    if [ $arg != "and" ]
+    then
+      clean_args+=($arg)
+    fi
+  done
+
+  echo ${clean_args[@]}
+}
+
 # One arg given - set the git author to one person
 ! test $2 && {
   # Fetch user attribs from github
@@ -94,26 +125,31 @@ function user_json {
 
 # More than one arg given - set the git author to a pair
 {
-  user1=$1
-  user2=$2
-  # if the second arg is "and" then user2 is the third arg
-  test $3 && test 'and' = $user2 && user2=$3
-  # ensure consistent ordering of author names regardless of the order given in the args
-  sorted_usernames=(`echo -e "$user1\n$user2" | sort`)
-  username1=${sorted_usernames[0]}
-  username2=${sorted_usernames[1]}
-  # Fetch user attribs from github
-  user1_json=`user_json $username1`
-  user2_json=`user_json $username2`
-  # Parse names
-  name1=`get_field_from_json "$user1_json" name`
-  name2=`get_field_from_json "$user2_json" name`
-  names="$name1 & $name2"
-  # Create pair email
-  email="pair+$username1.$username2@${ORG_DOMAIN:-devbootcamp.com}"
-  # Set git author
-  git config --global user.name  "$names"
-  git config --global user.email "$email"
+  # clean "and" from input args
+  argv=("$@")
+  users=`clean_ands_from_input "${argv[@]}"`
 
-  git_config_add_github_username $user1 $user2
+  # ensure consistent ordering of author names regardless of the order given in the args
+  sorted_usernames=($(printf '%s\n' "${users[@]}"|sort))
+
+  sorted_names=()
+
+  # Fetch user attribs from github and parse them
+  for sorted in "${sorted_usernames[@]}"; do
+    json=`user_json $sorted`
+    name=`get_field_from_json "$json" name`
+    sorted_names+=("$name")
+  done
+
+  #Create display name
+  all_names=`join_with_spaces "&" "${sorted_names[@]}"`
+  all_usernames=`join "." "${sorted_usernames[@]}"`
+
+  # Create email
+  email="pair+$all_usernames@${ORG_DOMAIN:-devbootcamp.com}"
+
+  # Set git author
+  git config --global user.name  "$all_names"
+  git config --global user.email "$email"
+  git_config_add_github_username "${sorted_usernames[@]}"
 }
