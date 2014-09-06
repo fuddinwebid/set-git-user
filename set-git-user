@@ -85,28 +85,13 @@ function user_json {
   echo "$json"
 }
 
-function join_with_spaces {
-  delimeter="${1}"
+function join {
+  separator="${1}"
   shift
   words=("${@}")
-  joined=$(printf " $delimeter %s" "${words[@]}")
-  echo ${joined:2}
-}
-
-function join { local IFS="$1"; shift; echo "$*"; }
-
-function clean_ands_from_input {
-  args=("${@}")
-  clean_args=()
-
-  for arg in "${args[@]}"; do
-    if [ $arg != "and" ]
-    then
-      clean_args+=($arg)
-    fi
-  done
-
-  echo ${clean_args[@]}
+  regex="$( printf "${separator}%s" "${words[@]}" )"
+  regex="${regex:${#separator}}" # remove leading separator
+  echo "${regex}"
 }
 
 # One arg given - set the git author to one person
@@ -127,9 +112,9 @@ function clean_ands_from_input {
 {
   # clean "and" from input args
   argv=("$@")
-  users=`clean_ands_from_input "${argv[@]}"`
+  users=`echo "${argv[@]}" | xargs -n1 echo | sed '/^and$/d'`
 
-  # ensure consistent ordering of author names regardless of the order given in the args
+  #ensure consistent ordering of author names regardless of the order given in the args
   sorted_usernames=($(printf '%s\n' "${users[@]}"|sort))
 
   sorted_names=()
@@ -142,7 +127,7 @@ function clean_ands_from_input {
   done
 
   #Create display name
-  all_names=`join_with_spaces "&" "${sorted_names[@]}"`
+  all_names=`join " & " "${sorted_names[@]}"`
   all_usernames=`join "." "${sorted_usernames[@]}"`
 
   # Create email
