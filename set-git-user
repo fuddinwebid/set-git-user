@@ -100,6 +100,8 @@ function join {
   user_json=`user_json $1`
   # Parse name and email
   name=`get_field_from_json "$user_json" name`
+  test -z "$name" && name=`get_field_from_json "$user_json" login`
+
   email=`get_field_from_json "$user_json" email`
   # Set git author
   git config --global user.name  "$name"
@@ -123,6 +125,8 @@ function join {
   for sorted in "${sorted_usernames[@]}"; do
     json=`user_json $sorted`
     name=`get_field_from_json "$json" name`
+    test -z "$name" && name=`get_field_from_json "$json" login`
+
     sorted_names+=("$name")
   done
 
