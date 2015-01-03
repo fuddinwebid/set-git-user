@@ -101,11 +101,11 @@ function join {
   # Parse name and email
   name=`get_field_from_json "$user_json" name`
   test -z "$name" && name=`get_field_from_json "$user_json" login`
-
-  email=`get_field_from_json "$user_json" email`
   # Set git author
   git config --global user.name  "$name"
-  git config --global user.email "$email"
+  # GitHub profiles without a public email address break this, so...
+  # https://help.github.com/articles/keeping-your-email-address-private/
+  git config --global user.email "$name@users.noreply.github.com"
   git_config_add_github_username $1
   exit
 }
