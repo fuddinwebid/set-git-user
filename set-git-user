@@ -65,6 +65,11 @@ function git_config_add_github_username {
 
 # First arg is "out" - clear existing author config
 test 'out' = $1 && {
+  # Error handling for attemping to 'iam out' when no users are logged in
+  test git config user.name || {
+    echo "No users to log out"
+    exit
+  }
   git config --global --remove-section user
   git_config_clear_github_username
   exit
