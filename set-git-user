@@ -135,7 +135,7 @@ function join {
   all_usernames=`join "." "${sorted_usernames[@]}"`
 
   # Create email
-  email="pair+$all_usernames@${ORG_DOMAIN:-devbootcamp.com}"
+  email="pair+$all_usernames@${ORG_DOMAIN:-hacktiv8.com}"
 
   # Set git author
   git config --global user.name  "$all_names"
