@@ -4,7 +4,7 @@ developer bootcamps.
 
 Installation
 
-  $ git clone https://github.com/Devbootcamp/set-git-user.git
+  $ git clone https://github.com/hacktiv8/set-git-user.git
   $ cd set-git-user
   $ ./install # will install to /usr/local/bin
 
@@ -28,14 +28,14 @@ are ordered alphanumerically (and therefore deterministically) and the domain is
 set by the ORG_DOMAIN environment variable (which you probably want to set
 in workstation's shell config).
 
-  $ ORG_DOMAIN=devbootcamp.com weare quackingduck mweitzel alycit
+  $ ORG_DOMAIN=hacktiv8.com weare quackingduck mweitzel alycit
   Alyssa Diaz & Matthew Weitzel & Myles Byrne
   $ git config --global user.email
-  pair+alycit.mweitzel.quackingduck@devbootcamp.com
+  pair+alycit.mweitzel.articfox@hacktiv8.com
   $ get-git-user
   alycit
   mweitzel
-  quackingduck
+  articfox
 
 If your organization uses Google apps for email then set up the address
 pair@your.org to bounce incoming emails - Google automatically routes
